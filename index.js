@@ -39,6 +39,14 @@ async function run() {
         await client.connect();
         const usersCollection = client.db('node_auth_server').collection('users');
         console.log('db connected')
+
+        // Add User
+        app.post('/user', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result)
+        })
+
         // Store New User
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -50,6 +58,7 @@ async function run() {
             };
             const result = await usersCollection.updateOne(filter, updatedDoc, options);
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+            console.log(token)
             res.send({ result, token });
         })
 
