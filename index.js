@@ -38,7 +38,6 @@ async function run() {
     try {
         await client.connect();
         const usersCollection = client.db('node_auth_server').collection('users');
-        console.log('db connected')
 
         // Add User
         app.post('/user', async (req, res) => {
@@ -57,9 +56,7 @@ async function run() {
                 $set: user,
             };
             const result = await usersCollection.updateOne(filter, updatedDoc, options);
-            const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
-            console.log(token)
-            res.send({ result, token });
+            res.send(result);
         })
 
         // Load all user
@@ -71,7 +68,7 @@ async function run() {
         // Find one user
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
-            const users = await usersCollection.findOne({ email: email }).toArray();
+            const users = await usersCollection.findOne({ email: email })
             res.send(users)
         })
     }
